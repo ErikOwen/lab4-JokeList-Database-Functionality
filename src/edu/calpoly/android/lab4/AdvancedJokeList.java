@@ -100,25 +100,24 @@ public class AdvancedJokeList extends SherlockFragmentActivity implements androi
 		//this.m_arrJokeList = new ArrayList<Joke>();
 		//this.m_arrFilteredJokeList = new ArrayList<Joke>();
 		//added line below (could be wrong)
-		this.m_nFilter = FILTER_SHOW_ALL;
+		//this.m_nFilter = FILTER_SHOW_ALL;
 		this.m_jokeAdapter = new JokeCursorAdapter(this, null, 0);
 		this.m_jokeAdapter.setOnJokeChangeListener(this);
 		this.m_strAuthorName = this.getResources().getString(R.string.author_name);
-				 
+		
+		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+
+		this.m_nFilter = preferences.getInt(SAVED_FILTER_VALUE, FILTER_SHOW_ALL);
+		
 		initLayout();
 		initAddJokeListeners();
 		
-		getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-		
-		for(String s : this.getResources().getStringArray(R.array.jokeList))
-		{
-			addJoke(new Joke(s, this.m_strAuthorName));
-		}
-		
-		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		String jokeString = "";
 		jokeString = preferences.getString(SAVED_EDIT_TEXT, "");
 		this.m_vwJokeEditText.setText(jokeString);
+		
+		getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+		
 		fillData();
 	}
 	
@@ -128,6 +127,7 @@ public class AdvancedJokeList extends SherlockFragmentActivity implements androi
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		Editor editor = preferences.edit();
 		editor.putString(AdvancedJokeList.SAVED_EDIT_TEXT, this.m_vwJokeEditText.getText().toString());
+		editor.putInt(SAVED_FILTER_VALUE, this.m_nFilter);
 		
 		editor.commit();
 	}
